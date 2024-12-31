@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const studioRoutes = require("./routes/studio.Routes"); // Adjust the path as necessary
 const userRoutes = require("./routes/user.Routes"); // Adjust the path as necessary
 const authRoutes = require("./routes/auth.Routes"); // Adjust the path as necessary
+const fileRoutes = require("./routes/file.Routes"); // Adjust the path as necessary
+const gameRoutes = require("./routes/game.Routes"); // Adjust the path as necessary
 
 const app = express();
 
@@ -16,5 +18,7 @@ app.use(morgan("dev"));
 app.use("/api/studio", studioRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/file", fileRoutes);
+app.use("/api/game", gameRoutes);
 
 module.exports = app;

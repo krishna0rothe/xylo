@@ -57,3 +57,57 @@ exports.login = async (req, res) => {
     res.status(500).json({ status: "error", message: "Server error", error });
   }
 };
+
+// Controller to get the studio or user based on the ID in the token
+exports.getStudioOrUser = async (req, res) => {
+    const userId = req.user._id; // Get the ID from the middleware (extracted from JWT)
+
+    try {
+        // Try to find the studio by the given ID
+        const studio = await Studio.findById(userId);
+        if (studio) {
+            return res.status(200).json({
+                status: 'success',
+                data: {
+                    _id: studio._id,
+                    name: studio.name,
+                    email: studio.email,
+                    country: studio.country,
+                    logo: studio.logo, // Adding logo field for studio
+                    role : 'studio',
+                    createdAt: studio.createdAt,
+                    updatedAt: studio.updatedAt,
+                },
+            });
+        }
+
+        // If the studio doesn't exist, try to find the user by the given ID
+        const user = await User.findById(userId);
+        if (user) {
+            return res.status(200).json({
+                status: 'success',
+                data: {
+                    name: user.name,
+                    email: user.email,
+                    country: user.country,
+                    logo: user.profilePicture, // Treating the profile picture as logo
+                    role: 'user',
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
+                },
+            });
+        }
+
+        // If neither a studio nor user is found
+        return res.status(404).json({
+            status: 'error',
+            message: 'Studio or User not found',
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal Server Error',
+        });
+    }
+};
