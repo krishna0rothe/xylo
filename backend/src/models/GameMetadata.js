@@ -27,9 +27,15 @@ const gameMetadataSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
