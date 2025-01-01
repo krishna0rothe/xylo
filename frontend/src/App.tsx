@@ -4,6 +4,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { Toaster } from 'react-hot-toast';
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import GameDetailsPage from "./pages/GameDetailsPage";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/game/:id" element={<GameDetailsPage />} />
         </Routes>
         </div>
       </Router>
