@@ -1,6 +1,8 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/Order");
 const Sell = require("../models/Sell");
+const GameMetadata = require("../models/GameMetadata");
+const Game = require("../models/Game");
 
 const razorpay = new Razorpay({
   key_id: "rzp_test_Kh4q0sjhzZ5eP4",
@@ -93,6 +95,14 @@ exports.confirmPaymentStatus = async (req, res) => {
     });
 
     if (sellRecord) {
+      // If payment is successful, update the totalSalesAmount in the gameMetadata model
+      const metadata = await GameMetadata.findOne({ game: gameId });
+
+      if (metadata) {
+        metadata.totalSalesAmount += sellRecord.amount; // Add the sale amount to totalSalesAmount
+        await metadata.save();
+      }
+
       res.status(200).json({
         status: "success",
         message: "Payment confirmed. User can download the game.",

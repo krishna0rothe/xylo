@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Studio = require("../models/Studio"); // Adjust the path as necessary
 const Game = require("../models/Game"); // Adjust the path as necessary
 const File = require("../models/File"); // Adjust the path as necessary
+const Sell = require("../models/Sell"); // Adjust the path as necessary
 
 
 // Register Controller
@@ -111,5 +112,129 @@ exports.addGame = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: 'error', message: 'Server error, please try again later' });
+  }
+};
+
+exports.getGamesByStudio = async (req, res) => {
+  const studioId = req.user._id; // Middleware adds studio ID to req.user
+
+  try {
+    // Find all games created by the studio
+    const games = await Game.find({ createdBy: studioId }).select(
+      "name description images platform category price version tags file"
+    );
+
+    if (!games || games.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "No games found for this studio" });
+    }
+
+    // Populate file details for each game
+    const gamesWithFile = await Promise.all(
+      games.map(async (game) => {
+        const file = game.file ? await File.findById(game.file) : null;
+        return {
+          _id: game._id,
+          name: game.name,
+          description: game.description,
+          images: game.images,
+          platform: game.platform,
+          category: game.category,
+          price: game.price,
+          version: game.version,
+          tags: game.tags,
+          file: file || null, // Include file or null if not available
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "Games fetched successfully",
+      data: gamesWithFile,
+    });
+  } catch (error) {
+    console.error("Error fetching games for studio:", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+
+exports.getStudioAnalytics = async (req, res) => {
+  const studioId = req.user._id; // Middleware sets the studio ID
+
+  try {
+    // Step 1: Fetch all games published by the studio
+    const games = await Game.find({ createdBy: studioId });
+    const gameIds = games.map((game) => game._id);
+    const totalGamesPublished = games.length;
+
+    // Step 2: Aggregate total downloads and revenue
+    const downloadAndRevenueAggregation = await Sell.aggregate([
+      { $match: { game: { $in: gameIds } } }, // Match sales related to studio's games
+      {
+        $group: {
+          _id: null,
+          totalDownloads: { $sum: 1 }, // Each sale represents one download
+          totalRevenue: { $sum: "$amount" }, // Sum of all revenue
+        },
+      },
+    ]);
+
+    const totalDownloads =
+      downloadAndRevenueAggregation[0]?.totalDownloads || 0;
+    const totalRevenue = downloadAndRevenueAggregation[0]?.totalRevenue || 0;
+
+    // Step 3: Group downloads and revenue by day
+    const downloadsByDay = await Sell.aggregate([
+      { $match: { game: { $in: gameIds } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          downloads: { $sum: 1 }, // Each sale represents one download
+        },
+      },
+      { $sort: { _id: 1 } }, // Sort by date ascending
+    ]);
+
+    const revenueByDay = await Sell.aggregate([
+      { $match: { game: { $in: gameIds } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          revenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { _id: 1 } }, // Sort by date ascending
+    ]);
+
+    // Format the analytics for response
+    const formattedDownloadsByDay = downloadsByDay.map((entry) => ({
+      date: entry._id,
+      downloads: entry.downloads,
+    }));
+
+    const formattedRevenueByDay = revenueByDay.map((entry) => ({
+      date: entry._id,
+      revenue: entry.revenue,
+    }));
+
+    // Step 4: Return the analytics
+    res.status(200).json({
+      status: "success",
+      summary: {
+        totalDownloads,
+        totalRevenue,
+        totalGamesPublished,
+      },
+      analytics: {
+        downloadsByDay: formattedDownloadsByDay,
+        revenueByDay: formattedRevenueByDay,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching studio analytics:", error);
+    res.status(500).json({ status: "error", message: error.message });
   }
 };

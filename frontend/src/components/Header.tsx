@@ -13,7 +13,7 @@ const Header: React.FC = () => {
         </div>
         <nav className="hidden md:block">
           <ul className="flex space-x-6">
-            <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Home</a></li>
+            <li><a href="/home" className="text-gray-300 hover:text-purple-500 transition-colors">Home</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Developers</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Gamers</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">About</a></li>
@@ -26,7 +26,7 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <nav className="md:hidden mt-4">
           <ul className="flex flex-col items-center space-y-4">
-            <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Home</a></li>
+            <li><a href="/home" className="text-gray-300 hover:text-purple-500 transition-colors">Home</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Developers</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Gamers</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">About</a></li>

@@ -4,6 +4,7 @@ const multer = require("multer");
 const File = require("../models/File");
 const Game = require("../models/Game");
 const Studio = require("../models/Studio");
+const GameMetadata = require("../models/GameMetadata");
 
 // Set up the file storage using Multer
 const storage = multer.diskStorage({
@@ -130,6 +131,13 @@ exports.downloadFile = async (req, res) => {
       return res
         .status(404)
         .json({ status: "error", message: "File not found on server" });
+    }
+
+    // Increment the numberOfDownloads field in the gameMetadata model
+    const metadata = await GameMetadata.findOne({ game: gameId });
+    if (metadata) {
+      metadata.numberOfDownloads += 1;
+      await metadata.save();
     }
 
     // Set the response headers to force the file download

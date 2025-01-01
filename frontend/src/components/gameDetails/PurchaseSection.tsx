@@ -39,14 +39,16 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
 
   useEffect(() => {
     const loadRazorpayScript = async () => {
-      const loaded = await loadRazorpay();
-      setIsRazorpayLoaded(loaded);
-      if (!loaded) {
-        setError('Failed to load payment gateway. Please try again later.');
+      if (price > 0) {
+        const loaded = await loadRazorpay();
+        setIsRazorpayLoaded(loaded);
+        if (!loaded) {
+          setError('Failed to load payment gateway. Please try again later.');
+        }
       }
     };
     loadRazorpayScript();
-  }, []);
+  }, [price]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,9 +85,7 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
     }
 
     try {
-      const amountInRupees = price * 84; // Convert USD to INR
-      const amountInPaise = Math.round(amountInRupees * 100); // Convert to paise
-      console.log(userData)
+      const amountInPaise = Math.round(price * 100); // Convert to paise
       const response = await axiosInstance.post('api/payment/create-order', {
         amount: amountInPaise,
         userId: userData._id,
@@ -120,6 +120,11 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
   };
 
   const handlePayment = async () => {
+    if (price === 0) {
+      handleDownload();
+      return;
+    }
+
     if (!isRazorpayLoaded || !userData) {
       setError('Payment gateway is not ready. Please try again later.');
       return;
@@ -197,11 +202,16 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
 
   const handleDownload = async () => {
     try {
-      const isConfirmed = await confirmPayment();
-      if (isConfirmed) {
+      if (price === 0) {
+        // For free games, skip payment confirmation and directly initiate download
         navigate(`/download/${gameId}`);
       } else {
-        setError('Unable to confirm payment. Please contact support.');
+        const isConfirmed = await confirmPayment();
+        if (isConfirmed) {
+          navigate(`/download/${gameId}`);
+        } else {
+          setError('Unable to confirm payment. Please contact support.');
+        }
       }
     } catch (error) {
       console.error('Error initiating download:', error);
@@ -222,11 +232,11 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
           <button
             onClick={handlePayment}
             className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded mb-4 ${
-              !isRazorpayLoaded || isProcessing ? 'opacity-50 cursor-not-allowed' : ''
+              (price > 0 && !isRazorpayLoaded) || isProcessing ? 'opacity-50 cursor-not-allowed' : ''
             }`}
-            disabled={!isRazorpayLoaded || isProcessing}
+            disabled={(price > 0 && !isRazorpayLoaded) || isProcessing}
           >
-            {isProcessing ? 'Processing...' : isRazorpayLoaded ? 'Buy Now' : 'Loading Payment...'}
+            {isProcessing ? 'Processing...' : price === 0 ? 'Download' : isRazorpayLoaded ? 'Buy Now' : 'Loading Payment...'}
           </button>
         </>
       ) : (
@@ -240,9 +250,11 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
       {error && (
         <div className="text-red-500 mt-2">{error}</div>
       )}
-      <div className="text-sm text-gray-400 mt-2">
-        Secure payment powered by Razorpay
-      </div>
+      {price > 0 && (
+        <div className="text-sm text-gray-400 mt-2">
+          Secure payment powered by Razorpay
+        </div>
+      )}
     </div>
   );
 };

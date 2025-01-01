@@ -162,8 +162,7 @@ exports.addDiscountToGame = async (req, res) => {
 exports.addReviewToGame = async (req, res) => {
   const { gameId } = req.params; // Extract the game ID from the request parameters
   const { rating, comment } = req.body; // Extract the rating and comment from the request body
-  const { _id: userId } = req.user; // Get user ID from the request (assumed added by authentication middleware)
-
+  const userId = req.user._id; // Get user ID from the request (assumed added by authentication middleware)
   try {
     // Check if the game exists in the database
     const game = await Game.findById(gameId);
@@ -301,3 +300,7 @@ exports.getGameById = async (req, res) => {
       });
   }
 };
+
+
+
+
