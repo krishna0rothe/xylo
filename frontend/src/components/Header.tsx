@@ -13,8 +13,8 @@ const Header: React.FC = () => {
         </div>
         <nav className="hidden md:block">
           <ul className="flex space-x-6">
-            <li><a href="/home" className="text-gray-300 hover:text-purple-500 transition-colors">Home</a></li>
-            <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Developers</a></li>
+            <li><a href="/home" className="text-gray-300 hover:text-purple-500 transition-colors">Store</a></li>
+            <li><a href="/asset" className="text-gray-300 hover:text-purple-500 transition-colors">Assets</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">Gamers</a></li>
             <li><a href="#" className="text-gray-300 hover:text-purple-500 transition-colors">About</a></li>
           </ul>

@@ -39,7 +39,7 @@ const PricingSection: React.FC = () => {
             title="Revenue Sharing Plan"
             description="No upfront costs – pay only a percentage of your earnings."
             features={[
-              "Keep 70% of your revenue",
+              "Keep 90% of your revenue",
               "No monthly fees",
               "Access to all platform features",
               "24/7 support"
