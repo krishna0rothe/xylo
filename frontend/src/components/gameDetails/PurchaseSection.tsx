@@ -36,7 +36,7 @@ const PurchaseSection: React.FC<PurchaseSectionProps> = ({ gameId, gameName, pri
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
   const navigate = useNavigate();
-
+  console.log(priceDisplay);
   useEffect(() => {
     const loadRazorpayScript = async () => {
       if (price > 0) {
