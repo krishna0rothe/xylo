@@ -2,7 +2,7 @@
 
 ## Note: Entire source code it available at developmet branch...
 
-## https://github.com/orpheusdark/Xylogames-Marketing-Dashboard 
+## https://github.com/orpheusdark/Xylogames-Marketing-Dashboard -- under development
 
 
 ### LIVE WEBSITE : http://xylogames.tech/
