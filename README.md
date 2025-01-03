@@ -120,8 +120,11 @@ This platform is a comprehensive ecosystem for game developers, asset creators, 
 ## Preview 📸
 
 ### Screenshots
-![Dashboard](path/to/dashboard.png)
-![Game Marketplace](path/to/marketplace.png)
-![User Profile](path/to/profile.png)
+![Dashboard](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20125847.png)
+![Game Marketplace](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20125910.png)
+![User Profile](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20125936.png)
+![User Profile](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20130231.png)
+
+
 
 🎉 **Congratulations!** You have successfully set up the xylo platform. Happy developing!
