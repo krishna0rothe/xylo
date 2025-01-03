@@ -125,6 +125,6 @@ This platform is a comprehensive ecosystem for game developers, asset creators, 
 ![User Profile](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20125936.png)
 ![User Profile](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screenshot%202025-01-03%20130231.png)
 
-
+![Watch the video](https://github.com/krishna0rothe/xylo/blob/main/Screenshots/Screen%20Recording%202025-01-03%20130428.mp4)
 
 🎉 **Congratulations!** You have successfully set up the xylo platform. Happy developing!
