@@ -3,6 +3,13 @@ const Order = require("../models/Order");
 const Sell = require("../models/Sell");
 const GameMetadata = require("../models/GameMetadata");
 const Game = require("../models/Game");
+const { getOrderDetails } = require("../utils/orderDetails");
+const { generateFancyInvoicePDF } = require("../utils/pdfGenerator");
+const { sendEmail } = require("../services/emailService");
+const User = require('../models/User');
+const Studio = require('../models/Studio');
+
+
 
 const razorpay = new Razorpay({
   key_id: "rzp_test_Kh4q0sjhzZ5eP4",
@@ -95,18 +102,13 @@ exports.confirmPaymentStatus = async (req, res) => {
     });
 
     if (sellRecord) {
-      // If payment is successful, update the totalSalesAmount in the gameMetadata model
-      const metadata = await GameMetadata.findOne({ game: gameId });
-
-      if (metadata) {
-        metadata.totalSalesAmount += sellRecord.amount; // Add the sale amount to totalSalesAmount
-        await metadata.save();
-      }
-
       res.status(200).json({
         status: "success",
         message: "Payment confirmed. User can download the game.",
       });
+
+      // Call the function to fetch order details and generate the invoice
+      fetchOrderAndGenerateInvoice(userId, gameId);
     } else {
       res.status(404).json({
         status: "error",
@@ -121,4 +123,66 @@ exports.confirmPaymentStatus = async (req, res) => {
     });
   }
 };
+
+/**
+ * Fetch order details and generate/send invoice.
+ */
+async function fetchOrderAndGenerateInvoice(userId, gameId) {
+  try {
+    // Get the sell record
+    const sellRecord = await Sell.findOne({
+      buyer: userId,
+      game: gameId,
+      status: "success",
+    });
+    if (!sellRecord) throw new Error("Sell record not found.");
+
+    // Fetch buyer details
+    const buyer = await User.findById(sellRecord.buyer);
+    if (!buyer) throw new Error("Buyer not found.");
+
+    // Fetch seller details (via game -> createdBy -> Studio)
+    const game = await Game.findById(gameId);
+    if (!game) throw new Error("Game not found.");
+    const seller = await Studio.findById(game.createdBy);
+    if (!seller) throw new Error("Seller not found.");
+
+    // Prepare details for the invoice
+    const invoiceData = {
+      transactionId: sellRecord._id,
+      buyer: {
+        name: buyer.name,
+        email: buyer.email,
+      },
+      seller: {
+        name: seller.name,
+        email: seller.email,
+      },
+      game: {
+        name: game.name,
+        price: game.price,
+      },
+    };
+
+    // Generate the PDF
+    const pdfPath = await generateFancyInvoicePDF(invoiceData);
+
+    // Send the invoice to the buyer
+    await sendEmail({
+      to: buyer.email,
+      subject: "Your Payment Invoice - Xylo",
+      text: `Hello ${buyer.name},\n\nPlease find attached your payment invoice for "${game.name}".\n\nThank you for your purchase!`,
+      attachments: [
+        {
+          filename: `invoice_${sellRecord._id}.pdf`,
+          path: pdfPath,
+        },
+      ],
+    });
+
+    console.log("Invoice sent successfully to:", buyer.email);
+  } catch (error) {
+    console.error("Error generating/sending invoice:", error.message);
+  }
+}
 

@@ -93,7 +93,7 @@ const DashboardOverview: React.FC = () => {
         </div>
         <div className="bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-xl font-semibold mb-2">Total Revenue</h3>
-          <p className="text-3xl font-bold">${formatNumber(analyticsData?.summary.totalRevenue || 0)}</p>
+          <p className="text-3xl font-bold">{formatNumber(analyticsData?.summary.totalRevenue || 0)}</p>
         </div>
       </div>
       <div className="bg-gray-800 rounded-lg shadow p-6">

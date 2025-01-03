@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
 import DownloadPage from "./pages/DownloadPage";
 import DashboardPage from "./pages/DashboardPage";
+import InGameCurrencyPurchase from "./pages/InGameCurrencyPurchase";
 
 
 
@@ -34,6 +35,8 @@ function App() {
             <Route path="/game/:id" element={<GameDetailsPage />} />
             <Route path="/download/:id" element={<DownloadPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+
+            <Route path="/ingame/:userId/:gameId" element={<InGameCurrencyPurchase />} />
 
             {/* Xylo Asset Marketplace Routes */}
             <Route path="/asset" element={<AssetHomePage />} />
