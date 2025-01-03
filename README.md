@@ -1,6 +1,6 @@
 # xylo 🎮
 
-##Note:Entire sourse code it avilabe at developmet branch
+## Note:Entire sourse code it avilabe at developmet branch
 
 ## Overview
 This platform is a comprehensive ecosystem for game developers, asset creators, and studios, designed to simplify the game development lifecycle, from ideation to publishing and monetization. It addresses the challenges of limited resources, lack of technical skills, marketing hurdles, and the complexity of managing game infrastructure. By offering an array of services tailored to specific needs, the platform creates a collaborative space for game creators to thrive.
