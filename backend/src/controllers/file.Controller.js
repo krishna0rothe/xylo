@@ -4,6 +4,7 @@ const multer = require("multer");
 const File = require("../models/File");
 const Game = require("../models/Game");
 const Studio = require("../models/Studio");
+const GameMetadata = require("../models/GameMetadata");
 
 // Set up the file storage using Multer
 const storage = multer.diskStorage({
@@ -95,39 +96,69 @@ exports.uploadGameFile = async (req, res) => {
 };
 
 
-// POST endpoint to download a file by its ID
 exports.downloadFile = async (req, res) => {
-  const { fileId } = req.params;
+  const { gameId } = req.params;
 
   try {
-    // Find the file by its ID
-    const file = await File.findById(fileId);
+    // Find the game by its ID to get the file reference
+    const game = await Game.findById(gameId).select("file");
+    if (!game) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Game not found" });
+    }
+
+    // If no file is associated with the game, return an error
+    if (!game.file) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "No file available for this game" });
+    }
+
+    // Find the file object by its ID
+    const file = await File.findById(game.file);
     if (!file) {
-      return res.status(404).json({ status: 'error', message: 'File not found' });
+      return res
+        .status(404)
+        .json({ status: "error", message: "File not found" });
     }
 
     // Determine the file path
-    const filePath = path.join(__dirname, '../../', file.location);
+    const filePath = path.join(__dirname, "../../", file.location);
 
-    // Check if the file exists
+    // Check if the file exists on the server
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ status: 'error', message: 'File not found on server' });
+      return res
+        .status(404)
+        .json({ status: "error", message: "File not found on server" });
+    }
+
+    // Increment the numberOfDownloads field in the gameMetadata model
+    const metadata = await GameMetadata.findOne({ game: gameId });
+    if (metadata) {
+      metadata.numberOfDownloads += 1;
+      await metadata.save();
     }
 
     // Set the response headers to force the file download
-    res.setHeader('Content-Disposition', `attachment; filename=${path.basename(filePath)}`);
-    res.setHeader('Content-Type', 'application/octet-stream'); // Forces download as binary data
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${path.basename(filePath)}`
+    );
+    res.setHeader("Content-Type", "application/octet-stream"); // Forces download as binary data
 
     // Pipe the file to the response
     const fileStream = fs.createReadStream(filePath);
-    fileStream.on('open', function () {
-      fileStream.pipe(res);  // Stream the file content to the response
+    fileStream.on("open", function () {
+      fileStream.pipe(res); // Stream the file content to the response
     });
-    fileStream.on('error', function (err) {
-      res.status(500).json({ status: 'error', message: 'File download failed' });
+    fileStream.on("error", function (err) {
+      res
+        .status(500)
+        .json({ status: "error", message: "File download failed" });
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', message: error.message });
+    res.status(500).json({ status: "error", message: error.message });
   }
 };

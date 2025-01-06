@@ -69,12 +69,7 @@ const GameDetailsPage: React.FC = () => {
     return <div className="text-white text-center mt-20">Error: {error || 'Game not found'}</div>;
   }
 
-  const convertToINR = (priceUSD: number) => {
-    const exchangeRate = 75; // Assuming 1 USD = 75 INR
-    return Math.round(priceUSD * exchangeRate);
-  };
-
-  const priceINR = convertToINR(gameDetails.price);
+  const priceINR = gameDetails.price;
   const priceDisplay = gameDetails.price === 0 ? 'Free' : `₹${priceINR}`;
 
   return (

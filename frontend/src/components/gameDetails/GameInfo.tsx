@@ -4,6 +4,7 @@ import PurchaseSection from './PurchaseSection';
 interface GameInfoProps {
   game: {
     id: string;
+    name: string;
     category: string;
     tags: string[];
     platform: string[];
@@ -14,10 +15,16 @@ interface GameInfoProps {
   studioLogo: string;
 }
 
+
 const GameInfo: React.FC<GameInfoProps> = ({ game, priceDisplay, studioName, studioLogo }) => {
   return (
     <div className="bg-gray-800 rounded-lg p-6">
-      <PurchaseSection gameId={game.id} price={game.price} priceDisplay={priceDisplay} />
+      <PurchaseSection 
+        gameId={game.id} 
+        gameName={game.name}
+        price={game.price} 
+        priceDisplay={priceDisplay} 
+      />
       <div className="mb-6">
         <h3 className="font-semibold mb-2">Developer</h3>
         <div className="flex items-center">

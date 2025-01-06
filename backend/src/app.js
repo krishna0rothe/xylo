@@ -6,6 +6,11 @@ const userRoutes = require("./routes/user.Routes"); // Adjust the path as necess
 const authRoutes = require("./routes/auth.Routes"); // Adjust the path as necessary
 const fileRoutes = require("./routes/file.Routes"); // Adjust the path as necessary
 const gameRoutes = require("./routes/game.Routes"); // Adjust the path as necessary
+const paymentRoutes = require("./routes/payment.Routes"); // Adjust the path as necessary
+const assetRoutes = require("./routes/asset.Routes"); // Adjust the path as necessary
+const assetpaymentRoutes = require("./routes/assetpayment.Routes"); // Adjust the path as necessary
+const tokenRoutes = require("./routes/token.Routes")
+const ingameRoutes = require("./routes/ingame.Routes");
 
 const app = express();
 
@@ -20,5 +25,11 @@ app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/file", fileRoutes);
 app.use("/api/game", gameRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/asset", assetRoutes);
+app.use("/api/assetpayment", assetpaymentRoutes);
+app.use("/api/ingame" , ingameRoutes);
+app.use("/token" , tokenRoutes);
+
 
 module.exports = app;
