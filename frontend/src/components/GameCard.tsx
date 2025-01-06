@@ -29,9 +29,11 @@ const GameCard: React.FC<GameCardProps> = ({ id, name, image, rating, price }) =
           <span className="ml-2 text-white">{rating.toFixed(1)}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-white">${price.toFixed(2)}</span>
+          <span className="text-lg font-bold text-white">
+            {price === 0 ? 'Free' : `₹${price.toFixed(2)}`}
+          </span>
           <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-            Buy Now
+            {price === 0 ? 'Download' : 'Buy Now'}
           </button>
         </div>
       </div>
@@ -40,4 +42,3 @@ const GameCard: React.FC<GameCardProps> = ({ id, name, image, rating, price }) =
 };
 
 export default GameCard;
-

@@ -1,13 +1,12 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Studio = require("../models/Studio"); // Adjust the path as necessary
-
+const Game = require("../models/Game");
 // Middleware to verify JWT token and attach user info and role to req.user
 exports.verifyToken = async (req, res, next) => {
   try {
     // Get the token from the Authorization header
     const token = req.header("Authorization")?.replace("Bearer ", "");
-
     if (!token) {
       return res
         .status(401)
@@ -55,4 +54,34 @@ exports.checkRole = (role) => {
     }
     next(); // Proceed to the next middleware or route handler
   };
+};
+
+
+exports.verifygameToken = (req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", ""); // Extract token from Authorization header
+
+  if (!token) {
+    return res.status(401).json({
+      status: "error",
+      message: "No token provided. Authorization denied.",
+    });
+  }
+
+  try {
+    // Decode and verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Add values to the request object
+    req.user = { id: decoded.userId };
+    req.gameId = decoded.gameId;
+    req.macAddress = decoded.macAddress;
+
+    next(); // Proceed to the next middleware/controller
+  } catch (error) {
+    console.error("Token verification error:", error);
+    return res.status(401).json({
+      status: "error",
+      message: "Invalid or expired token.",
+    });
+  }
 };
